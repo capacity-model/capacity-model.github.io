@@ -460,8 +460,9 @@ footer .credit{flex-basis:100%;color:var(--faint);text-align:right}
   </div>
 
   <footer>
-    <span>Capacity Modeling · ISyE 6202 &amp; 6335 Supply Chain Facilities · Georgia Tech ISyE</span>
-    <span class="credit">Simulator developed by PhD student Yinzhu Quan and Prof. Benoit Montreuil · Version 1.0, 2026-09-10</span>
+    <span>Capacity Modeling · ISyE 6202 &amp; 6335 Supply Chain Facilities</span>
+    <span>Simulator developed by PhD student Yinzhu Quan and Prof. Benoit Montreuil</span>
+    <span class="credit">Version 1.0, 2026-09-10</span>
   </footer>
 </div>
 
@@ -849,7 +850,7 @@ run();
 <script>
 /* auto-update: silently reload when a newer version is deployed (no hard-refresh needed) */
 (function(){
-  var BUILD="20260910-083821";
+  var BUILD="20260910-084229";
   function check(){
     fetch('version.txt?cb='+Date.now(),{cache:'no-store'})
       .then(function(r){return r.ok?r.text():null;})
