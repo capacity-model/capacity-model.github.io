@@ -7,7 +7,7 @@ An interactive Monte-Carlo simulator for capacity modeling under stochastic dema
 
 ## Built with
 
-Plain **HTML, CSS, and JavaScript** in a single self-contained file (`index.html`) — no frameworks and no build step. The Monte-Carlo engine and all charts are hand-written.
+Plain **HTML, CSS, and JavaScript** in a single self-contained file (`index.html`) — no frameworks and no build step.
 
 ## Usage
 
