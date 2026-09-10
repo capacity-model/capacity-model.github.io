@@ -217,7 +217,8 @@ tbody tr:nth-child(even) td:first-child{background:var(--surface-2)}
 .fx-eq .op{color:var(--gold-deep)}
 .fx-note{color:var(--faint);font-size:11px}
 footer{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);
-  color:var(--faint);font-size:11.5px;font-family:var(--mono);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  color:var(--faint);font-size:11.5px;font-family:var(--mono);display:flex;justify-content:space-between;gap:6px 12px;flex-wrap:wrap}
+footer .credit{flex-basis:100%;color:var(--faint);text-align:right}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -460,7 +461,7 @@ footer{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);
 
   <footer>
     <span>Capacity Modeling · ISyE 6202 &amp; 6335 Supply Chain Facilities · Georgia Tech ISyE</span>
-    <span id="seedNote"></span>
+    <span class="credit">Simulator developed by PhD student Yinzhu Quan and Prof. Benoit Montreuil · Version 1.0, 2026-09-10</span>
   </footer>
 </div>
 
@@ -752,7 +753,6 @@ function run(){
   renderStats(sim);
   renderLedger(sim);
   drawCharts(sim);
-  $('seedNote').textContent='instance rolled '+new Date().toLocaleTimeString();
 }
 const SERIES1=[
   {name:'Initial stock',key:'init',color:'--c1'},
@@ -849,7 +849,7 @@ run();
 <script>
 /* auto-update: silently reload when a newer version is deployed (no hard-refresh needed) */
 (function(){
-  var BUILD="20260909-210120";
+  var BUILD="20260910-083821";
   function check(){
     fetch('version.txt?cb='+Date.now(),{cache:'no-store'})
       .then(function(r){return r.ok?r.text():null;})
