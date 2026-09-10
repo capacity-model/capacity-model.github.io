@@ -1,4 +1,4 @@
-# :truck: Stochastic Capacity Simulator
+# :truck: Stochastic Capacity Simulator (HTML)
 
 An interactive Monte-Carlo simulator for capacity modeling under stochastic demand, reliability, quality, and efficiency. Developed for **ISyE 6202 & 6335 — Supply Chain Facilities** at the Georgia Institute of Technology (Instructor: Prof. Benoit Montreuil). This is the web (HTML) version; a Python (Streamlit) version is also available.
 
