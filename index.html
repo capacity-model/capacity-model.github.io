@@ -98,6 +98,15 @@ h1{font-size:27px;letter-spacing:-.01em}
 input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
 input:invalid{border-color:var(--crit)}
 
+/* factor mean+σ rows */
+.factor-head{display:grid;grid-template-columns:1fr 62px 62px;gap:8px;margin:2px 0 6px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.factor-head span{text-align:center}
+.factor-head span:first-child{text-align:left}
+.factor-row{display:grid;grid-template-columns:1fr 62px 62px;gap:8px;align-items:center;margin-bottom:9px}
+.factor-row:last-child{margin-bottom:2px}
+.factor-row label{font-size:13px;color:var(--ink);display:flex;align-items:center;gap:5px}
+.factor-row input{width:62px;padding:6px 6px;text-align:right;font-family:var(--mono);font-size:12.5px;font-weight:500;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:7px;color:var(--ink)}
+
 /* info tooltip */
 .info{position:relative;width:15px;height:15px;border-radius:50%;border:1px solid var(--line-strong);
   color:var(--faint);font-size:10px;font-weight:700;display:inline-grid;place-items:center;cursor:help;flex:none}
@@ -323,10 +332,23 @@ footer{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);
 
       <div class="group">
         <div class="group-title">Daily factors — Beta on [0, 1]</div>
-        <p style="font-size:12px;color:var(--muted);line-height:1.4;margin:2px 0 10px">Each factor is <b>Beta</b>-distributed with a <b>fixed</b> mean 90%, min 0% and max 100%. You set only the <b>standard deviation</b> (σ) of each factor.</p>
-        <div class="field"><label>σ(Reliability) <span class="info" tabindex="0">i<span class="tip">Std dev of the daily <b>Reliability</b> factor. Keep <b>≤ 0.10</b> for a clean bell shape.</span></span></label><input type="number" id="sAvail" value="0.05" min="0.01" max="0.10" step="0.01"></div>
-        <div class="field"><label>σ(Quality)</label><input type="number" id="sQual" value="0.05" min="0.01" max="0.10" step="0.01"></div>
-        <div class="field"><label>σ(Efficiency)</label><input type="number" id="sEff" value="0.05" min="0.01" max="0.10" step="0.01"></div>
+        <p style="font-size:12px;color:var(--muted);line-height:1.4;margin:2px 0 10px">Each factor is <b>Beta</b>-distributed on [0, 1]. Set its <b>mean</b> and <b>standard deviation</b> (σ).</p>
+        <div class="factor-head"><span></span><span>mean</span><span>σ</span></div>
+        <div class="factor-row">
+          <label>Reliability <span class="info" tabindex="0">i<span class="tip">Daily <b>Reliability</b> factor, Beta-distributed on [0,1]. Set its mean and σ — keep σ <b>small (≤ 0.10)</b> for a clean bell shape.</span></span></label>
+          <input type="number" id="rMean" value="0.90" min="0.01" max="0.99" step="0.01">
+          <input type="number" id="sAvail" value="0.05" min="0.01" max="0.10" step="0.01">
+        </div>
+        <div class="factor-row">
+          <label>Quality</label>
+          <input type="number" id="qMean" value="0.90" min="0.01" max="0.99" step="0.01">
+          <input type="number" id="sQual" value="0.05" min="0.01" max="0.10" step="0.01">
+        </div>
+        <div class="factor-row">
+          <label>Efficiency</label>
+          <input type="number" id="eMean" value="0.90" min="0.01" max="0.99" step="0.01">
+          <input type="number" id="sEff" value="0.05" min="0.01" max="0.10" step="0.01">
+        </div>
       </div>
     </aside>
 
@@ -490,7 +512,7 @@ function readParams(){
     tMin:num('tMin'), tMode:num('tMode'), tMax:num('tMax'),
     pMin:num('pMin'), pMode:num('pMode'), pMax:num('pMax'), pLam:num('pLam'),
     bMin:num('bMin'), bMax:num('bMax'), bMean:num('bMean'), bStd:num('bStd'),
-    fMean:0.90, sAvail:num('sAvail'), sQual:num('sQual'), sEff:num('sEff')
+    rMean:num('rMean'), qMean:num('qMean'), eMean:num('eMean'), sAvail:num('sAvail'), sQual:num('sQual'), sEff:num('sEff')
   };
 }
 function drawDemand(p){
@@ -509,9 +531,9 @@ function simulate(p){
   for(let day=1; day<=p.days; day++){
     const work=((day-1)%7)<p.k ? 1:0;
     const demand=drawDemand(p);
-    const av=sampleBetaScaled(0,1,p.fMean,p.sAvail);
-    const qu=sampleBetaScaled(0,1,p.fMean,p.sQual);
-    const ef=sampleBetaScaled(0,1,p.fMean,p.sEff);
+    const av=sampleBetaScaled(0,1,p.rMean,p.sAvail);
+    const qu=sampleBetaScaled(0,1,p.qMean,p.sQual);
+    const ef=sampleBetaScaled(0,1,p.eMean,p.sEff);
     const netcap=work*Math.floor(p.a*p.N*av*qu*ef/p.t);
     const prod=Math.min(netcap, demand+Math.max(0,p.target-init));
     const sales=Math.max(0,Math.min(demand,prod+init));
@@ -721,7 +743,7 @@ function hoverBind(svg,tip,rows,X,ml,iw,n,html){
 let lastSim=null,lastP=null;
 function run(){
   const p=readParams(); lastP=p;
-  const gross=p.N*p.a/p.t, eqr=p.fMean*p.fMean*p.fMean;
+  const gross=p.N*p.a/p.t, eqr=p.rMean*p.qMean*p.eMean;
   $('c-gross').textContent=fmt0(gross);
   $('c-eqr').textContent=pct0(eqr);
   $('c-net').textContent=fmt0(eqr*gross);
@@ -827,7 +849,7 @@ run();
 <script>
 /* auto-update: silently reload when a newer version is deployed (no hard-refresh needed) */
 (function(){
-  var BUILD="20260909-203127";
+  var BUILD="20260909-205942";
   function check(){
     fetch('version.txt?cb='+Date.now(),{cache:'no-store'})
       .then(function(r){return r.ok?r.text():null;})
